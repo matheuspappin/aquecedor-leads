@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aquecedor de Leads - 4 Chips Compradores</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --card-bg: #131b2e;
+            --border: #222f49;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --terminal-bg: #030712;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .title-area h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #fff;
+        }
+
+        .title-area p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+        /* Banner de Sessao do Vendedor */
+        .session-banner {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .session-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-green { background-color: var(--success); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+        .dot-red { background-color: var(--danger); box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }
+
+        .session-user-badge {
+            padding: 0.35rem 0.85rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        /* Metricas */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) { .metrics-grid { grid-template-columns: 1fr; } }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-val { font-size: 1.8rem; font-weight: 800; line-height: 1.2; }
+        .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.4rem; }
+
+        /* Chips Grid */
+        .section-title {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 600;
+        }
+
+        .chips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .chip-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .chip-card:hover { border-color: #3b82f6; }
+
+        .chip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .chip-name { font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 0.4rem; }
+
+        .status-pill {
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .status-open { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-close { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+
+        /* Workspace */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        select, textarea, input[type="text"] {
+            width: 100%;
+            background: #0b0f19;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.88rem;
+            margin-top: 0.4rem;
+        }
+
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .terminal {
+            background: var(--terminal-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            height: 380px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.82rem;
+        }
+
+        .log-line { margin-bottom: 0.3rem; word-break: break-all; }
+        .log-info { color: #60a5fa; }
+        .log-success { color: #34d399; }
+        .log-warning { color: #fbbf24; }
+        .log-error { color: #f87171; }
+        .log-system { color: #c084fc; font-weight: bold; }
+
+        /* Tabela */
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); text-align: left; }
+        th { background: #0b0f19; color: var(--text-muted); font-weight: 600; }
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .badge-status {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        .badge-aguardando { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; }
+        .badge-aquecido { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-box {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; width: 90%; max-width: 400px; text-align: center;
+        }
+        .qr-container { background: white; padding: 1rem; border-radius: 12px; display: inline-block; margin: 1.25rem 0; }
+        .qr-container img { width: 230px; height: 230px; display: block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="title-area">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                Aquecedor de Leads (4 Chips Compradores)
+            </h1>
+            <p>Disparo como Cliente Curioso - Triagem Automatica de Ausencia de Site - Envio Direto para a Maquina de Vendas</p>
+        </div>
+        <div>
+            <span style="font-size: 0.8rem; background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.4rem 0.8rem; border-radius: 9999px; font-weight: 700;">
+                Porta 5050 - Maquina de Vendas Intacta na Porta 5000
+            </span>
+        </div>
+    </header>
+
+    <!-- Sessao do Vendedor (CRM Lead Hunter) -->
+    <div class="session-banner">
+        <div class="session-status">
+            <span class="status-dot dot-green"></span>
+            <strong style="color: var(--success);">Conectado</strong>
+            <span style="color: var(--text-muted);">|</span>
+            <span style="color: var(--text-muted);">Instancia pronta para aquecimento de leads.</span>
+        </div>
+        <div class="session-user-badge">
+            <span style="color: #94a3b8;">Vendedor conectado:</span>
+            <strong style="color: #818cf8;" id="crmUserEmail">Carregando sessao...</strong>
+        </div>
+    </div>
+
+    <!-- Metricas do Funil -->
+    <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div class="metric-card">
+            <div class="metric-val" id="metricTotal" style="color: #60a5fa;">0</div>
+            <div class="metric-label">1. Leads Abordados</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="metricAguardando" style="color: #cbd5e1;">0</div>
+            <div class="metric-label">2. Aguardando Resposta (&lt; 24h)</div>
+        </div>
+        <div class="metric-card" style="border-color: rgba(245, 158, 11, 0.4);">
+            <div class="metric-val" id="metricAquecidos" style="color: #f59e0b;">0</div>
+            <div class="metric-label">3. Confirmaram SEM SITE (Aquecidos)</div>
+        </div>
+        <div class="metric-card" style="border-color: rgba(234, 179, 8, 0.5); background: rgba(234, 179, 8, 0.04);">
+            <div class="metric-val" id="metricTriagem" style="color: #facc15;">0</div>
+            <div class="metric-label">4. 🤔 Aguardando Triagem Manual</div>
+        </div>
+        <div class="metric-card" style="border-color: rgba(148, 163, 184, 0.3);">
+            <div class="metric-val" id="metricDescartados" style="color: #94a3b8;">0</div>
+            <div class="metric-label">5. Com Site / Descartados</div>
+        </div>
+        <div class="metric-card" style="border-color: rgba(239, 68, 68, 0.3);">
+            <div class="metric-val" id="metricExpirados" style="color: #f87171;">0</div>
+            <div class="metric-label">6. Expirados Sem Resposta (&gt; 24h)</div>
+        </div>
+    </div>
+
+    <!-- 4 Chips Compradores -->
+    <div class="section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Status dos 4 Chips Compradores (Evolution API)
+    </div>
+    <div class="chips-grid" id="chipsContainer">
+        <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1rem;">Carregando status dos chips...</div>
+    </div>
+
+    <!-- SELETOR E CONFIGURAÇÃO DO MOTOR DE TRIAGEM (MÁQUINA DE VENDAS VS GEMINI) -->
+    <div class="card" style="margin-bottom: 1.5rem; border-color: rgba(99, 102, 241, 0.35); background: linear-gradient(180deg, #131b2e 0%, #0d1424 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+            <div>
+                <h2 style="margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; color: #fff;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Motor de Triagem de Respostas do Aquecedor
+                </h2>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+                    O chip comprador atua exclusivamente como <b>isca curiosa</b>. Quando o lead confirma que não tem site, o Bot da Máquina de Vendas da agência dispara a oferta após o delay e, ao receber resposta, <b>notifica o Super Admin no Gestor de Lotes (/vendas/lotes) para despachar ao Closer humano</b>.
+                </p>
+            </div>
+
+            <!-- Seletor de Modo (Abas / Botões) -->
+            <div style="display: flex; gap: 0.5rem; background: #080c16; padding: 0.3rem; border-radius: 10px; border: 1px solid var(--border);">
+                <button type="button" id="tabModeRules" onclick="switchClassifierMode('rules')" style="padding: 0.5rem 0.9rem; border-radius: 7px; border: none; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                    <span>⚡ Respostas Pré-Criadas</span>
+                    <span style="font-size: 0.7rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 1px 6px; border-radius: 9999px;">Sem API / Recomendado</span>
+                </button>
+                <button type="button" id="tabModeGemini" onclick="switchClassifierMode('gemini')" style="padding: 0.5rem 0.9rem; border-radius: 7px; border: none; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                    <span>🤖 Gemini IA</span>
+                    <span style="font-size: 0.7rem; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; padding: 1px 6px; border-radius: 9999px;">Pré-Pronto / Futuro</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Descrição do Modo Ativo -->
+        <div id="classifierModeDescription" style="padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.85rem; line-height: 1.4;"></div>
+
+        <!-- Grid de Conteúdo: Lado Esquerdo = Configurações do Modo, Lado Direito = Simulador Interativo -->
+        <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 1.25rem;">
+            
+            <!-- Subpainel 1: Configuração do Modo Rules -->
+            <div id="panelRulesConfig" style="background: #0a0e1a; border: 1px solid var(--border); border-radius: 10px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: #f59e0b;">
+                        🔥 Termos de Ausência de Site (AQUECIDO):
+                    </label>
+                    <span id="countSemSite" style="font-size: 0.75rem; color: #94a3b8;"></span>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                    Se a resposta do lead contiver qualquer um destes termos (ex: "não temos", "só insta", "não, mas posso te explicar"), ele é marcado como <b>Aquecido</b> e entra para a Máquina de Vendas.
+                </p>
+                <textarea id="txtSemSiteTermos" rows="4" style="font-size: 0.8rem; line-height: 1.4;" placeholder="Separe os termos por vírgula..."></textarea>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; margin-bottom: 0.4rem;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: #94a3b8;">
+                        ℹ️ Termos de Presença de Site (COM SITE):
+                    </label>
+                    <span id="countComSite" style="font-size: 0.75rem; color: #94a3b8;"></span>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                    Termos que indicam site ativo (além de links com .com, .com.br, etc.).
+                </p>
+                <textarea id="txtComSiteTermos" rows="2" style="font-size: 0.8rem; line-height: 1.4;" placeholder="Separe os termos por vírgula..."></textarea>
+
+                <div style="margin-top: 0.8rem; display: flex; justify-content: flex-end;">
+                    <button type="button" class="btn btn-sm btn-success" onclick="saveRulesConfig()">
+                        💾 Salvar Regras de Respostas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Subpainel 2: Configuração do Modo Gemini (Opcional / Futuro) -->
+            <div id="panelGeminiConfig" style="display: none; background: #0a0e1a; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px; padding: 1rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #818cf8; margin-bottom: 0.4rem;">
+                    🤖 Configurações da API Gemini (Google AI Studio):
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                    Deixamos a integração 100% pronta. Se ativar este modo, basta inserir a chave abaixo. Caso a API falhe por cota ou conexão, o sistema aciona fallback automático para as regras pré-criadas.
+                </p>
+
+                <label style="font-size: 0.8rem; color: #cbd5e1; font-weight: 600;">Chave da API Gemini (GEMINI_API_KEY):</label>
+                <input type="password" id="geminiApiKeyInput" placeholder="Ex: AIzaSy..." style="margin-bottom: 0.75rem;" />
+
+                <label style="font-size: 0.8rem; color: #cbd5e1; font-weight: 600;">Modelo Gemini:</label>
+                <select id="geminiModelSelect" style="margin-bottom: 1rem;">
+                    <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (Ultra Rápido - 500 RPD)</option>
+                    <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                </select>
+
+                <div style="display: flex; justify-content: flex-end;">
+                    <button type="button" class="btn btn-sm" onclick="saveGeminiConfig()">
+                        💾 Salvar Configurações Gemini
+                    </button>
+                </div>
+            </div>
+
+            <!-- Subpainel 3: Simulador / Testador em Tempo Real -->
+            <div style="background: #0a0e1a; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; display: flex; flex-direction: column;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>🧪 Testar Triagem em Tempo Real</span>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem;">
+                    Simule a resposta do lead e veja instantaneamente como o robô classifica e qual ação é disparada:
+                </p>
+
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.6rem;">
+                    <input type="text" id="simTestInput" placeholder="Digite uma resposta. Ex: nao,mas temos insta.." style="margin-top: 0; font-size: 0.82rem;" onkeydown="if(event.key==='Enter') runSimulation()" />
+                    <button type="button" class="btn btn-sm" onclick="runSimulation()" style="white-space: nowrap;">
+                        Testar
+                    </button>
+                </div>
+
+                <!-- Chips de exemplos rápidos -->
+                <div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 0.35rem;">Testes rápidos com um clique:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.8rem;">
+                    <button type="button" onclick="fillAndRunSim('nao,mas temos insta.. nao,mas posso te explicar....')" style="font-size: 0.72rem; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 7px; border-radius: 4px; cursor: pointer;">"não, mas temos insta.."</button>
+                    <button type="button" onclick="fillAndRunSim('Não temos site ainda')" style="font-size: 0.72rem; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 7px; border-radius: 4px; cursor: pointer;">"não temos site ainda"</button>
+                    <button type="button" onclick="fillAndRunSim('Infelizmente não')" style="font-size: 0.72rem; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 7px; border-radius: 4px; cursor: pointer;">"infelizmente não"</button>
+                    <button type="button" onclick="fillAndRunSim('Temos sim, acesse www.meusite.com.br')" style="font-size: 0.72rem; background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 7px; border-radius: 4px; cursor: pointer;">"temos sim www.site..."</button>
+                    <button type="button" onclick="fillAndRunSim('Olá boa tarde, quem fala?')" style="font-size: 0.72rem; background: rgba(148, 163, 184, 0.12); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); padding: 2px 7px; border-radius: 4px; cursor: pointer;">"olá quem fala?"</button>
+                </div>
+
+                <!-- Resultado da Simulação -->
+                <div id="simResultBox" style="margin-top: auto; padding: 0.75rem; border-radius: 8px; border: 1px dashed var(--border); background: #070b14; font-size: 0.8rem; color: #94a3b8;">
+                    💡 Clique em um dos testes rápidos acima ou digite uma resposta para simular a triagem.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="workspace">
+        <!-- Lado Esquerdo: Disparar Direto do Lead Hunter ou Via CSV de Teste -->
+        <div class="card">
+            <h2>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Configuração do Disparo de Aquecimento
+            </h2>
+
+            <!-- Seletor de Origem: CRM Lead Hunter vs CSV Teste -->
+            <div style="margin-bottom: 1rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.4rem;">Origem dos Leads:</label>
+                <div style="display: flex; gap: 1.25rem; background: #0b0f19; padding: 0.65rem 0.9rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.45rem; font-weight: 500; font-size: 0.85rem; color: #cbd5e1; margin: 0;">
+                        <input type="radio" name="leadSource" value="crm" checked onchange="toggleLeadSource('crm')" style="cursor: pointer; width: auto; margin: 0;">
+                        <span>Pacote do Lead Hunter (Supabase)</span>
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.45rem; font-weight: 500; font-size: 0.85rem; color: #818cf8; margin: 0;">
+                        <input type="radio" name="leadSource" value="csv" onchange="toggleLeadSource('csv')" style="cursor: pointer; width: auto; margin: 0;">
+                        <span>📁 Upload de Planilha CSV (Apenas Teste)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Opção 1: Pacote do Lead Hunter (Supabase) -->
+            <div id="sourceCrmArea" style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin: 0;">Escolha o Pacote Garimpado:</label>
+                    <button type="button" onclick="loadSearches()" id="btnReloadSearches" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #818cf8; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; cursor: pointer;">🔄 Atualizar</button>
+                </div>
+                <select id="selectSearch" onchange="onSearchChange()">
+                    <option value="">Carregando pacotes do Lead Hunter...</option>
+                </select>
+                <div id="searchInfo" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;"></div>
+            </div>
+
+            <!-- Opção 2: Upload CSV para Testes Controlados -->
+            <div id="sourceCsvArea" style="display: none; margin-bottom: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.4); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <label for="csvFileInput" style="color: #818cf8; font-weight: 600; font-size: 0.85rem; margin: 0;">Selecione o arquivo CSV de teste:</label>
+                    <button type="button" onclick="baixarExemploCsv()" style="background: transparent; border: 1px solid var(--border); color: #94a3b8; font-size: 0.72rem; padding: 2px 7px; border-radius: 4px; cursor: pointer;">⬇ Baixar Modelo CSV</button>
+                </div>
+                <input type="file" id="csvFileInput" accept=".csv" style="padding: 0.5rem; background: #0b0f19; border: 1px solid var(--border); border-radius: 6px; width: 100%; color: #f8fafc; font-size: 0.85rem;" onchange="handleCsvFile(event)">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    Aceita CSV com colunas <code>nome, telefone</code> (ou formato completo com <code>empresa, cidade</code>). Ex: <code>Bruno, 5551991999935</code>
+                </p>
+                <div id="csvFeedback" style="margin-top: 0.5rem; font-size: 0.85rem; font-weight: 600;"></div>
+                <div id="csvPreviewArea" style="margin-top: 0.6rem; display: none;">
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.3rem;">Prévia dos contatos para teste controlado:</div>
+                    <div id="csvPreviewList" style="max-height: 90px; overflow-y: auto; background: #0b0f19; border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; font-size: 0.78rem; font-family: monospace;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">Pergunta do Comprador (com Spintax):</label>
+                <textarea id="spintaxTemplate" rows="4">{Ola|Oi|Boa tarde}! {Vi o trabalho de vocês no Google|Achei o perfil da empresa de vocês na internet} e achei muito bom. Vocês teriam um {site|catálogo online} para eu ver {fotos dos serviços|mais detalhes e valores} com calma?</textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <button id="btnStart" class="btn btn-success" style="flex: 1;" onclick="startWarming()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Iniciar Aquecimento do Pacote
+                </button>
+                <button class="btn btn-danger" onclick="stopWarming()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12"/></svg>
+                    Parar
+                </button>
+            </div>
+            <p id="noteSourceText" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.6rem;">
+                * O sistema dispara apenas para leads com <b>has_website = false</b>. Quem responder que não tem site é sincronizado automaticamente no Supabase como um novo pacote <b>"AQUECIDOS"</b> para você selecionar na Máquina de Vendas.
+            </p>
+        </div>
+
+        <!-- Lado Direito: Terminal SSE -->
+        <div class="card">
+            <h2>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                Monitor do Robô em Tempo Real
+            </h2>
+            <div class="terminal" id="terminalLogs">
+                <div class="log-line log-system">[SISTEMA] Monitor de eventos conectado. Aguardando atividade.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MESA DE TRIAGEM MANUAL DE ANÁLISE -->
+    <div class="card" id="cardTriagemManual" style="margin-bottom: 2rem; border-color: rgba(234, 179, 8, 0.4); background: linear-gradient(180deg, #181d2a 0%, #0e1422 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h2 style="margin: 0; color: #facc15; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Mesa de Triagem Manual de Análise
+                    <span id="badgeCountTriagem" style="background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">0 pendentes</span>
+                </h2>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+                    Leads cuja resposta foi inconclusiva ou dúvida ("quem é?", "posso te ajudar?"). O robô manteve <b>silêncio total</b>. Decida com 1 clique se aprova como Aquecido para a Máquina de Vendas ou descarta.
+                </p>
+            </div>
+            <button class="btn btn-sm" onclick="loadStats()" style="background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); color: #facc15; cursor: pointer;">
+                🔄 Atualizar Triagem
+            </button>
+        </div>
+
+        <div id="triagemCardsContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div style="text-align: center; padding: 1.5rem; color: #94a3b8; font-size: 0.85rem; border: 1px dashed var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.4);">
+                🎉 Nenhum lead pendente de triagem manual no momento. Todas as respostas foram tratadas!
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela do Funil Completo -->
+    <div class="card">
+        <h2 style="margin-bottom: 0.25rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Leads Aquecidos (Confirmaram ausência de site)
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Estes contatos já entraram no pacote de aquecidos no Supabase e já aparecem no menu da Máquina de Vendas (:5000)</p>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Lead</th>
+                        <th>Telefone</th>
+                        <th>Nicho</th>
+                        <th>Status</th>
+                        <th>Resposta dada ao Comprador</th>
+                    </tr>
+                </thead>
+                <tbody id="leadsTableBody">
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhum lead em trânsito no momento.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal QR Code -->
+<div id="qrModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h3 id="modalChipTitle" style="font-size: 1.2rem; margin-bottom: 0.4rem; color: #f8fafc;">Conectar Chip Comprador</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+            Abra o WhatsApp no celular &gt; <b>Aparelhos Conectados</b> &gt; <b>Conectar Aparelho</b>
+        </p>
+        
+        <div class="qr-container" style="position: relative; min-width: 250px; min-height: 250px; display: inline-flex; align-items: center; justify-content: center;">
+            <div id="qrLoading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 230px; height: 230px;">
+                <div style="width: 38px; height: 38px; border: 3px solid #e2e8f0; border-top: 3px solid #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                <p style="margin-top: 14px; font-size: 0.82rem; color: #475569; font-weight: 600;">Gerando QR Code...</p>
+            </div>
+            <img id="qrImage" src="" alt="QR Code" style="display: none; width: 230px; height: 230px;" />
+            <div id="qrSuccess" style="display: none; flex-direction: column; align-items: center; justify-content: center; width: 230px; height: 230px; color: #10b981; font-weight: bold;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <p style="margin-top: 10px;">WhatsApp Conectado!</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 0.75rem;">
+            <button class="btn btn-secondary btn-sm" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Verificar sessão do Vendedor no CRM
+    async function checkCrmSession() {
+        const emailSpan = document.getElementById('crmUserEmail');
+        try {
+            const res = await fetch('/api/session');
+            const data = await res.json();
+            if (data && data.email) {
+                emailSpan.textContent = data.email;
+            } else {
+                emailSpan.innerHTML = '<span style="color: var(--danger);">Sessão não encontrada no Lead Hunter</span>';
+            }
+        } catch (e) {
+            console.error('Erro na sessão:', e);
+            if (emailSpan) emailSpan.textContent = 'Erro de conexão';
+        }
+    }
+
+    // Carregar Pacotes do Lead Hunter via Supabase
+    async function loadSearches() {
+        try {
+            const res = await fetch('/api/searches');
+            const data = await res.json();
+            const select = document.getElementById('selectSearch');
+
+            if (!data.searches || data.searches.length === 0) {
+                select.innerHTML = '<option value="">Nenhum pacote encontrado no Lead Hunter</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">-- Selecione um Pacote Garimpado --</option>';
+            data.searches.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                
+                let dateStr = '';
+                if (s.created_at) {
+                    const d = new Date(s.created_at);
+                    dateStr = ` - ${d.toLocaleDateString('pt-BR')}`;
+                }
+                
+                opt.textContent = s.query + ' em ' + s.city + ' (' + s.total_leads + ' leads)' + dateStr;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error('Erro ao buscar pacotes do Lead Hunter:', e);
+        }
+    }
+
+    async function onSearchChange() {
+        const id = document.getElementById('selectSearch').value;
+        const info = document.getElementById('searchInfo');
+        if (!id) { info.textContent = ''; return; }
+
+        try {
+            const res = await fetch('/api/searches/' + id + '/leads');
+            const data = await res.json();
+            info.innerHTML = 'Total no pacote: <b>' + data.total + '</b> | Elegíveis SEM SITE: <b style="color:var(--success);">' + data.semSiteCount + '</b>';
+        } catch (e) {}
+    }
+
+    // Carregar Status dos 4 Chips Compradores
+    async function loadInstances() {
+        try {
+            const res = await fetch('/api/instances');
+            const data = await res.json();
+            const container = document.getElementById('chipsContainer');
+            container.innerHTML = '';
+
+            data.instances.forEach(inst => {
+                const isOpen = inst.status === 'open';
+                const pillClass = isOpen ? 'status-open' : 'status-close';
+                const pillText = isOpen ? 'Conectado' : 'Desconectado';
+                const dotClass = isOpen ? 'dot-green' : 'dot-red';
+
+                const card = document.createElement('div');
+                card.className = 'chip-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="chip-header">
+                            <span class="chip-name">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                ${inst.name}
+                            </span>
+                            <span class="status-pill ${pillClass}">
+                                <span class="status-dot ${dotClass}"></span>
+                                ${pillText}
+                            </span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                            Chip Comprador (Pergunta sobre site)
+                        </div>
+                    </div>
+                    <div>
+                        ${!isOpen ? `<button class="btn btn-sm" onclick="openQrModal('${inst.name}')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            Conectar QR Code
+                        </button>` : `<span style="font-size: 0.8rem; color: var(--success); font-weight: bold;">✓ Pronto para aquecer</span>`}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (e) {}
+    }
+
+    let qrPollInterval = null;
+    let qrStatusInterval = null;
+
+    async function fetchQrCode(chipName) {
+        try {
+            const res = await fetch('/api/instance/connect/' + chipName);
+            const data = await res.json();
+            const base64 = data.base64 || (data.qrcode && data.qrcode.base64);
+
+            if (base64) {
+                const qrImg = document.getElementById('qrImage');
+                const qrLoading = document.getElementById('qrLoading');
+                qrImg.src = base64;
+                qrImg.style.display = 'block';
+                if (qrLoading) qrLoading.style.display = 'none';
+            }
+        } catch (e) {
+            console.error('Erro ao buscar QR code:', e);
+        }
+    }
+
+    async function checkInstanceStatus(chipName) {
+        try {
+            const res = await fetch('/api/instances');
+            const data = await res.json();
+            const found = (data.instances || []).find(i => i.name === chipName);
+            if (found && (found.status === 'open' || found.status === 'connecting' && found.number)) {
+                // Conectado com sucesso!
+                const qrLoading = document.getElementById('qrLoading');
+                const qrImg = document.getElementById('qrImage');
+                const qrSuccess = document.getElementById('qrSuccess');
+                
+                if (qrLoading) qrLoading.style.display = 'none';
+                if (qrImg) qrImg.style.display = 'none';
+                if (qrSuccess) qrSuccess.style.display = 'flex';
+
+                setTimeout(() => {
+                    closeModal();
+                }, 1800);
+            }
+        } catch (e) {}
+    }
+
+    async function openQrModal(chipName) {
+        closeModal(); // limpa anteriores
+        document.getElementById('modalChipTitle').textContent = 'Conectar ' + chipName;
+        document.getElementById('qrModal').style.display = 'flex';
+        
+        const qrLoading = document.getElementById('qrLoading');
+        const qrImg = document.getElementById('qrImage');
+        const qrSuccess = document.getElementById('qrSuccess');
+
+        if (qrLoading) qrLoading.style.display = 'flex';
+        if (qrImg) { qrImg.style.display = 'none'; qrImg.src = ''; }
+        if (qrSuccess) qrSuccess.style.display = 'none';
+
+        // Primeira tentativa imediata
+        await fetchQrCode(chipName);
+
+        // Polling do QR code a cada 20 segundos (tempo de expiração do WhatsApp)
+        qrPollInterval = setInterval(() => fetchQrCode(chipName), 15000);
+
+        // Verificação se já conectou a cada 2 segundos
+        qrStatusInterval = setInterval(() => checkInstanceStatus(chipName), 2000);
+    }
+
+    function closeModal() {
+        if (qrPollInterval) { clearInterval(qrPollInterval); qrPollInterval = null; }
+        if (qrStatusInterval) { clearInterval(qrStatusInterval); qrStatusInterval = null; }
+        document.getElementById('qrModal').style.display = 'none';
+        loadInstances();
+    }
+
+    // ==========================================
+    // CONTROLE DE ORIGEM: CRM VS CSV DE TESTE
+    // ==========================================
+    let parsedCsvLeads = [];
+
+    function toggleLeadSource(source) {
+        const crmArea = document.getElementById('sourceCrmArea');
+        const csvArea = document.getElementById('sourceCsvArea');
+        const btnStart = document.getElementById('btnStart');
+        const noteText = document.getElementById('noteSourceText');
+
+        if (source === 'csv') {
+            crmArea.style.display = 'none';
+            csvArea.style.display = 'block';
+            btnStart.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Iniciar Aquecimento de Teste (CSV)';
+            if (noteText) {
+                noteText.innerHTML = '🧪 <b>Modo Teste CSV Ativo:</b> O disparo usará os contatos importados para simular o fluxo com contatos controlados. Quem responder que não tem site é sincronizado normalmente no Supabase.';
+            }
+        } else {
+            crmArea.style.display = 'block';
+            csvArea.style.display = 'none';
+            parsedCsvLeads = [];
+            document.getElementById('csvFeedback').innerHTML = '';
+            document.getElementById('csvFileInput').value = '';
+            const previewArea = document.getElementById('csvPreviewArea');
+            if (previewArea) previewArea.style.display = 'none';
+            btnStart.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Iniciar Aquecimento do Pacote';
+            if (noteText) {
+                noteText.innerHTML = '* O sistema dispara apenas para leads com <b>has_website = false</b>. Quem responder que não tem site é sincronizado automaticamente no Supabase como um novo pacote <b>"AQUECIDOS"</b> para você selecionar na Máquina de Vendas.';
+            }
+        }
+    }
+
+    function handleCsvFile(e) {
+        const file = e.target.files[0];
+        const feedback = document.getElementById('csvFeedback');
+        const previewArea = document.getElementById('csvPreviewArea');
+        const previewList = document.getElementById('csvPreviewList');
+
+        if (!file) {
+            parsedCsvLeads = [];
+            feedback.innerHTML = '';
+            if (previewArea) previewArea.style.display = 'none';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const text = evt.target.result;
+            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+            if (lines.length < 2) {
+                feedback.innerHTML = '<span style="color: var(--danger);">Arquivo CSV vazio ou sem cabeçalho.</span>';
+                parsedCsvLeads = [];
+                if (previewArea) previewArea.style.display = 'none';
+                return;
+            }
+
+            // Detecta delimitador
+            let delimiter = ',';
+            if (lines[0].includes(';')) delimiter = ';';
+            else if (lines[0].includes('\t')) delimiter = '\t';
+
+            const headers = lines[0].split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
+
+            let idxNome = headers.findIndex(h => h.includes('nome') || h.includes('name'));
+            let idxTel = headers.findIndex(h => h.includes('tel') || h.includes('phone') || h.includes('contato') || h.includes('cel') || h.includes('whats'));
+            let idxEmpresa = headers.findIndex(h => h.includes('empresa') || h.includes('company') || h.includes('negocio'));
+            let idxCidade = headers.findIndex(h => h.includes('cidade') || h.includes('city') || h.includes('endereco') || h.includes('address'));
+
+            if (idxNome === -1) idxNome = 0;
+            if (idxTel === -1) idxTel = (headers.length > 1 ? 1 : 0);
+
+            parsedCsvLeads = [];
+            for (let i = 1; i < lines.length; i++) {
+                const rawCols = lines[i].split(delimiter).map(c => c.trim().replace(/^["']|["']$/g, ''));
+                if (rawCols.length <= Math.max(idxNome, idxTel)) continue;
+
+                const nome = rawCols[idxNome] || 'Cliente Teste';
+                let telLimpo = (rawCols[idxTel] || '').replace(/\D/g, '');
+                if (telLimpo.length >= 8) {
+                    if ((telLimpo.length === 10 || telLimpo.length === 11) && !telLimpo.startsWith('55')) {
+                        telLimpo = '55' + telLimpo;
+                    }
+
+                    const empresa = idxEmpresa >= 0 ? rawCols[idxEmpresa] : '';
+                    const cidade = idxCidade >= 0 ? rawCols[idxCidade] : '';
+
+                    const metadata = {};
+                    headers.forEach((h, colIdx) => {
+                        metadata[h] = rawCols[colIdx] || '';
+                    });
+
+                    parsedCsvLeads.push({
+                        nome,
+                        telefone: telLimpo,
+                        empresa,
+                        cidade,
+                        metadata
+                    });
+                }
+            }
+
+            if (parsedCsvLeads.length > 0) {
+                feedback.innerHTML = `<span style="color: var(--success);">✓ ${parsedCsvLeads.length} contato(s) carregado(s) com sucesso!</span>`;
+                if (previewArea && previewList) {
+                    previewArea.style.display = 'block';
+                    previewList.innerHTML = parsedCsvLeads.map((l, i) => `<div>#${i+1} <b>${l.nome}</b> (+${l.telefone}) ${l.empresa ? '• ' + l.empresa : ''}</div>`).join('');
+                }
+            } else {
+                feedback.innerHTML = '<span style="color: var(--danger);">Nenhum contato com telefone válido (mínimo 8 dígitos) encontrado no CSV.</span>';
+                if (previewArea) previewArea.style.display = 'none';
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+    }
+
+    function baixarExemploCsv() {
+        const csvContent = "nome,telefone,empresa,cidade\nBruno Teste,5551991999935,Tech Solutions,Porto Alegre\nCliente Teste 2,5511999999999,Studio Design,São Paulo";
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'modelo_leads_teste_aquecedor.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Iniciar Aquecimento
+    async function startWarming() {
+        const selectedSource = document.querySelector('input[name="leadSource"]:checked')?.value || 'crm';
+        const searchId = document.getElementById('selectSearch').value;
+        const spintaxTemplate = document.getElementById('spintaxTemplate').value;
+
+        if (selectedSource === 'csv') {
+            if (!parsedCsvLeads || parsedCsvLeads.length === 0) {
+                alert('Por favor, selecione um arquivo CSV de teste com pelo menos 1 contato válido!');
+                return;
+            }
+        } else {
+            if (!searchId) {
+                alert('Por favor, selecione um pacote do Lead Hunter no menu suspenso!');
+                return;
+            }
+        }
+
+        const btn = document.getElementById('btnStart');
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.textContent = 'Iniciando...';
+
+        try {
+            const res = await fetch('/api/aquecimento/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    source: selectedSource,
+                    searchId: selectedSource === 'csv' ? 'csv_test' : searchId,
+                    csvLeads: selectedSource === 'csv' ? parsedCsvLeads : null,
+                    spintaxTemplate
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert(data.message);
+                loadStats();
+            } else {
+                alert('Erro: ' + data.error);
+            }
+        } catch (e) {
+            alert('Erro ao conectar ao servidor.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+
+    async function stopWarming() {
+        await fetch('/api/aquecimento/stop', { method: 'POST' });
+        alert('Comando de parada enviado!');
+    }
+
+    // Executar Triagem Manual (Aprovar como Aquecido ou Descartar)
+    async function executarTriagem(telefone, acao) {
+        const confirmar = confirm(acao === 'aprovar' 
+            ? 'Deseja APROVAR este lead como AQUECIDO? Ele será agendado para o Bot da Máquina de Vendas disparar a oferta.' 
+            : 'Deseja DESCARTAR este lead? Ele será removido da esteira de vendas.');
+        if (!confirmar) return;
+
+        try {
+            const res = await fetch('/api/leads/triagem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telefone, acao })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                loadStats();
+            } else {
+                alert('Erro: ' + (data.error || 'Falha ao processar triagem'));
+            }
+        } catch (e) {
+            alert('Erro de comunicação com o servidor: ' + e.message);
+        }
+    }
+
+    // Carregar Metricas e Lista de Leads
+    async function loadStats() {
+        try {
+            const res = await fetch('/api/leads/stats');
+            const data = await res.json();
+
+            document.getElementById('metricTotal').textContent = data.total;
+            document.getElementById('metricAguardando').textContent = data.aguardandoComprador;
+            document.getElementById('metricAquecidos').textContent = data.aquecidosProntos;
+            if (document.getElementById('metricTriagem')) {
+                document.getElementById('metricTriagem').textContent = data.pendenteTriagem || 0;
+            }
+            if (document.getElementById('badgeCountTriagem')) {
+                document.getElementById('badgeCountTriagem').textContent = `${data.pendenteTriagem || 0} pendentes`;
+            }
+            if (document.getElementById('metricDescartados')) {
+                document.getElementById('metricDescartados').textContent = data.comSite || 0;
+            }
+            if (document.getElementById('metricExpirados')) {
+                document.getElementById('metricExpirados').textContent = data.expiradosSemResposta || 0;
+            }
+
+            // Renderizar Cards de Triagem Manual (Leads Inconclusivos)
+            const pendentes = (data.list || []).filter(l => l.status === 'pendente_triagem');
+            const triagemContainer = document.getElementById('triagemCardsContainer');
+            if (triagemContainer) {
+                if (pendentes.length === 0) {
+                    triagemContainer.innerHTML = `
+                        <div style="text-align: center; padding: 1.5rem; color: #94a3b8; font-size: 0.85rem; border: 1px dashed var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.4);">
+                            🎉 Nenhum lead pendente de triagem manual no momento. Todas as respostas foram tratadas!
+                        </div>
+                    `;
+                } else {
+                    triagemContainer.innerHTML = pendentes.map(l => {
+                        const cleanPhone = (l.telefone || '').replace(/\D/g, '');
+                        const horaEnvio = l.dataResposta ? new Date(l.dataResposta).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+                        return `
+                            <div style="background: #0b1120; border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 10px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                                <div style="flex: 1; min-width: 280px;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+                                        <strong style="color: #f8fafc; font-size: 0.95rem;">${l.nome}</strong>
+                                        <span style="font-family: monospace; font-size: 0.8rem; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 1px 6px; border-radius: 4px;">+${l.telefone}</span>
+                                        <span style="font-size: 0.75rem; color: #94a3b8;">${l.nicho || 'Geral'}</span>
+                                        ${horaEnvio ? `<span style="font-size: 0.72rem; color: #64748b; margin-left: auto;">Recebido às ${horaEnvio}</span>` : ''}
+                                    </div>
+                                    <div style="background: #141c2e; border-left: 3px solid #eab308; padding: 0.6rem 0.8rem; border-radius: 4px; margin: 0.4rem 0;">
+                                        <div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 2px;">💬 Resposta do Lead (Inconclusiva):</div>
+                                        <div style="color: #fef08a; font-size: 0.9rem; font-weight: 500;">"${l.respostaAoComprador || '(sem texto)'}"</div>
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8;">
+                                        <b>Diagnóstico do Classificador:</b> <i>${l.motivoTriagem || 'Resposta neutra ou inconclusiva'}</i>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.6rem; align-items: center;">
+                                    <button type="button" class="btn btn-sm btn-success" onclick="executarTriagem('${cleanPhone}', 'aprovar')" style="padding: 0.55rem 1rem; font-weight: 700;">
+                                        🔥 Aprovar (Aquecido)
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="executarTriagem('${cleanPhone}', 'descartar')" style="padding: 0.55rem 0.9rem;">
+                                        🗑️ Descartar
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Renderizar Tabela Geral
+            const tbody = document.getElementById('leadsTableBody');
+            if (!data.list || data.list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhum lead em trânsito no momento.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.list.forEach(l => {
+                let badge = '<span class="badge-status badge-aguardando">Aguardando (&lt; 24h)</span>';
+                let actionBtns = '';
+
+                if (l.status === 'aquecido') {
+                    badge = '<span class="badge-status badge-aquecido">🔥 Aquecido (Sem Site)</span>';
+                } else if (l.status === 'pendente_triagem') {
+                    badge = '<span class="badge-status" style="background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4);">🤔 Pendente Triagem</span>';
+                    const cleanPhone = (l.telefone || '').replace(/\D/g, '');
+                    actionBtns = `
+                        <div style="display: flex; gap: 0.35rem; margin-top: 5px;">
+                            <button type="button" class="btn btn-sm btn-success" style="padding: 2px 7px; font-size: 0.72rem;" onclick="executarTriagem('${cleanPhone}', 'aprovar')">✓ Aprovar</button>
+                            <button type="button" class="btn btn-sm btn-danger" style="padding: 2px 7px; font-size: 0.72rem;" onclick="executarTriagem('${cleanPhone}', 'descartar')">✗ Descartar</button>
+                        </div>
+                    `;
+                } else if (l.status === 'expirado_sem_resposta') {
+                    badge = '<span class="badge-status" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">Expirado (&gt; 24h no vácuo)</span>';
+                } else if (l.status === 'com_site' || l.status === 'descartado') {
+                    badge = '<span class="badge-status" style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3);">Com Site / Descartado</span>';
+                } else if (l.status === 'inconclusivo') {
+                    badge = '<span class="badge-status" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);">Neutro / Inconclusivo</span>';
+                }
+
+                const tagOrigem = l.origem === 'csv_teste' 
+                    ? '<span style="font-size: 0.68rem; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); padding: 1px 6px; border-radius: 4px; margin-left: 6px;">CSV TESTE</span>' 
+                    : '';
+
+                const motivoSub = l.motivoTriagem ? `<div style="font-size: 0.72rem; color: #94a3b8; margin-top: 3px;">↳ <i>${l.motivoTriagem}</i></div>` : '';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${l.nome} ${tagOrigem}</td>
+                    <td style="font-family: monospace;">+${l.telefone}</td>
+                    <td>${l.nicho || 'geral'}</td>
+                    <td>
+                        ${badge}
+                        ${actionBtns}
+                    </td>
+                    <td style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
+                        <div>${l.respostaAoComprador || (l.status === 'expirado_sem_resposta' ? 'Não respondeu dentro do limite de 24h' : 'Aguardando retorno do lead...')}</div>
+                        ${motivoSub}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        } catch (e) {
+            console.error('Erro ao carregar dados:', e);
+        }
+    }
+
+    // Server-Sent Events (SSE)
+    function initLogs() {
+        const terminal = document.getElementById('terminalLogs');
+        const evtSource = new EventSource('/api/logs');
+
+        evtSource.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                const line = document.createElement('div');
+                line.className = 'log-line log-' + data.type;
+                line.textContent = '[' + data.time + '] ' + data.msg;
+                terminal.appendChild(line);
+                terminal.scrollTop = terminal.scrollHeight;
+
+                if (data.type === 'success' || data.type === 'system') {
+                    loadStats();
+                }
+            } catch (e) {}
+        };
+    }
+
+    // ==========================================
+    // CONTROLE DO MOTOR DE TRIAGEM (REGRAS VS GEMINI)
+    // ==========================================
+    let currentClassifierConfig = {
+        mode: 'rules',
+        gemini: { apiKey: '', model: 'gemini-3.1-flash-lite' },
+        rules: { semSiteTermos: [], comSiteTermos: [] }
+    };
+
+    async function loadClassifierConfig() {
+        try {
+            const res = await fetch('/api/classifier/config');
+            const data = await res.json();
+            currentClassifierConfig = data;
+            renderClassifierUI();
+        } catch (e) {
+            console.error('Erro ao carregar configuração do classificador:', e);
+        }
+    }
+
+    function renderClassifierUI() {
+        const mode = currentClassifierConfig.mode || 'rules';
+        const isRules = mode === 'rules';
+
+        const tabRules = document.getElementById('tabModeRules');
+        const tabGemini = document.getElementById('tabModeGemini');
+        const panelRules = document.getElementById('panelRulesConfig');
+        const panelGemini = document.getElementById('panelGeminiConfig');
+        const descDiv = document.getElementById('classifierModeDescription');
+
+        if (isRules) {
+            tabRules.style.background = '#1e293b';
+            tabRules.style.color = '#fff';
+            tabRules.style.boxShadow = '0 0 10px rgba(99, 102, 241, 0.3)';
+            tabGemini.style.background = 'transparent';
+            tabGemini.style.color = '#94a3b8';
+            tabGemini.style.boxShadow = 'none';
+
+            panelRules.style.display = 'block';
+            panelGemini.style.display = 'none';
+
+            descDiv.style.background = 'rgba(16, 185, 129, 0.1)';
+            descDiv.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+            descDiv.style.color = '#6ee7b7';
+            descDiv.innerHTML = `<strong>⚡ Modo Ativo: Regras e Respostas Pré-Criadas (Recomendado).</strong> O robô opera 100% offline e sem custos de API. Identifica ausência de site, direcionamento para redes sociais ('só insta', 'não, mas posso te explicar', 'apenas whats') de forma determinística e segura.`;
+        } else {
+            tabGemini.style.background = '#1e293b';
+            tabGemini.style.color = '#fff';
+            tabGemini.style.boxShadow = '0 0 10px rgba(99, 102, 241, 0.3)';
+            tabRules.style.background = 'transparent';
+            tabRules.style.color = '#94a3b8';
+            tabRules.style.boxShadow = 'none';
+
+            panelRules.style.display = 'none';
+            panelGemini.style.display = 'block';
+
+            descDiv.style.background = 'rgba(99, 102, 241, 0.1)';
+            descDiv.style.border = '1px solid rgba(99, 102, 241, 0.3)';
+            descDiv.style.color = '#c7d2fe';
+            descDiv.innerHTML = `<strong>🤖 Modo Ativo: Inteligência Artificial Gemini (Opcional).</strong> A classificação é executada via API do Gemini. Caso ocorra erro de conexão, cota ou ausência de chave, o sistema aciona fallback automático para as regras pré-criadas.`;
+        }
+
+        const semSite = currentClassifierConfig.rules?.semSiteTermos || [];
+        const comSite = currentClassifierConfig.rules?.comSiteTermos || [];
+        document.getElementById('txtSemSiteTermos').value = semSite.join(', ');
+        document.getElementById('txtComSiteTermos').value = comSite.join(', ');
+        document.getElementById('countSemSite').textContent = `${semSite.length} termos ativos`;
+        document.getElementById('countComSite').textContent = `${comSite.length} termos ativos`;
+
+        if (document.getElementById('geminiApiKeyInput')) {
+            document.getElementById('geminiApiKeyInput').value = currentClassifierConfig.gemini?.apiKey || '';
+        }
+        if (document.getElementById('geminiModelSelect')) {
+            document.getElementById('geminiModelSelect').value = currentClassifierConfig.gemini?.model || 'gemini-3.1-flash-lite';
+        }
+    }
+
+    async function switchClassifierMode(newMode) {
+        currentClassifierConfig.mode = newMode;
+        renderClassifierUI();
+        try {
+            await fetch('/api/classifier/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: newMode })
+            });
+        } catch (e) {
+            console.error('Erro ao atualizar modo:', e);
+        }
+    }
+
+    async function saveRulesConfig() {
+        const rawSem = document.getElementById('txtSemSiteTermos').value;
+        const rawCom = document.getElementById('txtComSiteTermos').value;
+
+        const semSiteTermos = rawSem.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        const comSiteTermos = rawCom.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+        try {
+            const res = await fetch('/api/classifier/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    rules: { semSiteTermos, comSiteTermos }
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentClassifierConfig = data.config;
+                renderClassifierUI();
+                alert('✓ Regras de respostas pré-criadas salvas com sucesso!');
+            }
+        } catch (e) {
+            alert('Erro ao salvar regras: ' + e.message);
+        }
+    }
+
+    async function saveGeminiConfig() {
+        const apiKey = document.getElementById('geminiApiKeyInput').value.trim();
+        const model = document.getElementById('geminiModelSelect').value;
+
+        try {
+            const res = await fetch('/api/classifier/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    gemini: { apiKey, model }
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentClassifierConfig = data.config;
+                renderClassifierUI();
+                alert('✓ Configurações do Gemini salvas com sucesso!');
+            }
+        } catch (e) {
+            alert('Erro ao salvar Gemini: ' + e.message);
+        }
+    }
+
+    function fillAndRunSim(text) {
+        document.getElementById('simTestInput').value = text;
+        runSimulation();
+    }
+
+    async function runSimulation() {
+        const input = document.getElementById('simTestInput').value.trim();
+        const box = document.getElementById('simResultBox');
+        if (!input) return;
+
+        box.innerHTML = '<span style="color: #60a5fa;">Executando triagem...</span>';
+
+        try {
+            const res = await fetch('/api/classifier/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: input })
+            });
+            const data = await res.json();
+
+            let borderStyle = 'border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);';
+            let badgeHtml = '<span style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">🔥 AQUECIDO (SEM SITE)</span>';
+
+            if (!data.match && data.type === 'com_site') {
+                borderStyle = 'border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.05);';
+                badgeHtml = '<span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">ℹ️ COM SITE IDENTIFICADO</span>';
+            } else if (!data.match) {
+                borderStyle = 'border-color: rgba(148, 163, 184, 0.3); background: rgba(148, 163, 184, 0.05);';
+                badgeHtml = '<span style="background: rgba(148, 163, 184, 0.2); color: #cbd5e1; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">⏳ RESPOSTA INCONCLUSIVA</span>';
+            }
+
+            const methodLabel = data.method === 'gemini' 
+                ? '🤖 Gemini IA' 
+                : (data.method === 'rules_fallback' ? '⚡ Regras (Fallback da IA)' : '⚡ Regras Pré-Criadas');
+
+            box.style = borderStyle + ' padding: 0.75rem; border-radius: 8px; font-size: 0.8rem;';
+            box.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    ${badgeHtml}
+                    <span style="font-size: 0.72rem; color: #94a3b8;">Motor: <b>${methodLabel}</b></span>
+                </div>
+                <div style="color: #f8fafc; font-size: 0.82rem; margin-bottom: 0.3rem;">
+                    <b>Motivo:</b> ${data.reason}
+                </div>
+                <div style="color: #cbd5e1; font-size: 0.78rem; line-height: 1.35; padding-top: 0.3rem; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    ${data.actionSummary}
+                </div>
+            `;
+        } catch (e) {
+            box.innerHTML = '<span style="color: var(--danger);">Erro ao testar triagem.</span>';
+        }
+    }
+
+    // Inicialização
+    checkCrmSession();
+    loadClassifierConfig();
+    loadSearches();
+    loadInstances();
+    loadStats();
+    initLogs();
+    setInterval(loadInstances, 10000);
+    setInterval(loadStats, 15000);
+</script>
+
+</body>
+</html>

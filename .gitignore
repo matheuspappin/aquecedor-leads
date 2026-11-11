@@ -1,0 +1,66 @@
+﻿# === Node / JS / TS ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# === Build outputs ===
+.next/
+dist/
+build/
+out/
+.output/
+.nuxt/
+.cache/
+
+# === Godot ===
+.godot/
+*.import
+export_presets.cfg
+
+# === Docker (imagens nao vao pro git) ===
+*.tar
+docker-volumes/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+
+# === PHP ===
+vendor/
+composer.lock
+
+# === Env / secrets ===
+.env
+.env.local
+.env.*.local
+.env.production
+*.pem
+*.key
+secrets/
+
+# === Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+*.log
+logs/
+
+# === Temporarios ===
+.claude-tmp/
+tmp/
+temp/
